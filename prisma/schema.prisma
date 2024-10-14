@@ -1,0 +1,49 @@
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String           @id @default(cuid())
+  email        String        @unique
+  password     String
+  role         Role          @default(CLIENT) // CLIENT ou ADMIN (coiffeur)
+  first_name    String
+  name     String
+  phone_number    String      @unique
+  reservations Reservation[]
+}
+
+model Availability {
+  id         String         @id @default(cuid())
+  start_time  DateTime
+  end_time    DateTime
+  reservation Reservation?
+}
+
+model Reservation {
+  id             String           @id @default(cuid())
+  client         User          @relation(fields: [client_id], references: [id])
+  client_id       String
+  start_time      DateTime
+  end_time        DateTime
+  status         ReservationStatus @default(PENDING) // PENDING, CONFIRMED, CANCELED
+  availability  Availability    @relation(fields: [availability_id], references: [id])
+  availability_id String @unique
+}
+
+enum Role {
+  CLIENT
+  ADMIN // Ce rôle est attribué au coiffeur
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+}
