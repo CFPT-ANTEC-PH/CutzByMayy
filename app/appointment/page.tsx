@@ -42,6 +42,7 @@ import { useRouter } from "next/navigation";
 type FormSchema = {};
 
 export default function Page() {
+  const { data: session, status } = useSession();
   const router = useRouter();
   const zodFormSchema: ZodType<FormSchema> = z.object({});
   const {
@@ -68,12 +69,46 @@ export default function Page() {
         description: "Une erreur est survenue. Veuillez réessayer.",
       });
     } else {
+      await fetchEmail();
       router.push("/account/reservation");
       router.refresh();
     }
   };
 
-  const { data: session, status } = useSession();
+  const fetchEmail = async () => {
+    try {
+      console.log(selectedTime);
+      if (selectedTime !== null && selectedTime !== undefined) {
+        const response = await fetch("/api/mail", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: "simon.cdt@eduge.ch",
+            userFirstname: session?.user.name,
+            date: selectedTime,
+          }),
+        });
+
+        const data = await response.json();
+        console.log(data);
+
+        if (!response.ok) {
+          toast({
+            variant: "destructive",
+            description: "L'envoie de l'email a échoué.",
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        description: "L'envoie de l'email a échoué.",
+      });
+    }
+  };
 
   const [date, setDate] = useState<Date | undefined>(new Date());
 

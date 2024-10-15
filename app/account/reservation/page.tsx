@@ -22,6 +22,7 @@ import {
   deleteReservation,
   getAllReservationsByUser,
   getAllReservationsByUserConfirmed,
+  getAllReservationsByUserDateUpcoming,
   getReservationById,
 } from "@/lib/ActionReservation";
 import { CalendarIcon, ClockIcon, LoaderCircle } from "lucide-react";
@@ -102,7 +103,7 @@ export default function Page() {
       try {
         setLoading(true);
         const data = isChecked
-          ? await getAllReservationsByUserConfirmed()
+          ? await getAllReservationsByUserDateUpcoming()
           : await getAllReservationsByUser();
 
         if (Array.isArray(data) && data.length > 0 && "error" in data[0]) {

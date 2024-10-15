@@ -85,6 +85,24 @@ export const getAllReservationsByUserConfirmed = async () => {
   }
 };
 
+export const getAllReservationsByUserDateUpcoming = async () => {
+  try {
+    const user = await getUser();
+    const reservations = await db.reservation.findMany({
+      where: {
+        client_id: user?.id,
+        start_time: {
+          gt: new Date(),
+        },
+      },
+    });
+    return reservations;
+  } catch (error) {
+    console.error(error);
+    return [{ error: "error" }];
+  }
+};
+
 export const getReservationByDate = async (date: string) => {
   // Convertir la date en objet Date
   const selectedDate = new Date(date);
