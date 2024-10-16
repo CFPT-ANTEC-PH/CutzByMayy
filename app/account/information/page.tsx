@@ -40,8 +40,8 @@ export default function Page() {
   };
 
   return (
-    <section className="flex flex-col items-center gap-5">
-      <Tabs defaultValue="account" className="w-[400px]">
+    <section className="my-[20px] flex flex-col items-center gap-5">
+      <Tabs defaultValue="account" className="w-1/3 min-w-[370px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="account">Compte</TabsTrigger>
           <TabsTrigger value="password">Mot de passe</TabsTrigger>
@@ -53,7 +53,7 @@ export default function Page() {
           <ModifyPasswordForm />
         </TabsContent>
       </Tabs>
-      <Card className="w-[400px]">
+      <Card className="w-1/3 min-w-[370px]">
         <CardHeader>
           <CardTitle>Se déconnecter</CardTitle>
           <CardDescription>

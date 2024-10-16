@@ -7,8 +7,48 @@ import { Turn as Hamburger } from "hamburger-react";
 import { Separator } from "../ui/separator";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import {
+  Calendar,
+  Cloud,
+  CreditCard,
+  Github,
+  Keyboard,
+  LifeBuoy,
+  LogOut,
+  Mail,
+  MessageSquare,
+  Plus,
+  PlusCircle,
+  Settings,
+  User,
+  UserPlus,
+  Users,
+} from "lucide-react";
 
 export default function Navbar() {
+  const lstMenu = ["Accueil", "Tarifs", "Rendez-vous", "Contact"];
+  const lstAccount = ["Informations", "Réservations", "Paramètres"];
+
   const router = useRouter();
 
   const [isOpen, setOpen] = useState(false);
@@ -42,10 +82,10 @@ export default function Navbar() {
           </p>
         </Link>
         <div className="flex w-1/5 min-w-[400px] justify-between font-bold">
-          <Link href="/">Accueil</Link>
-          <Link href="/#tarifs">Tarifs</Link>
-          <Link href="/appointment">Rendez-vous</Link>
-          <Link href="/#contact">Contact</Link>
+          <Link href={`/`}>Accueil</Link>
+          <Link href={`/#tarifs`}>Tarifs</Link>
+          <Link href={`/appointment`}>Rendez-vous</Link>
+          <Link href={`/#contact`}>Contact</Link>
         </div>
         {status == "loading" ? (
           <Link href={"#"}>
@@ -54,11 +94,45 @@ export default function Navbar() {
             </Button>
           </Link>
         ) : status == "authenticated" ? (
-          <Link href={"/account/information"}>
-            <Button variant={"ghost"} className="text-base font-bold">
-              Mon compte
-            </Button>
-          </Link>
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="text-lg font-bold">
+                  Mon compte
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuGroup className="font-bold">
+                  <Link href={"/account/information"} className="flex">
+                    <DropdownMenuItem className="w-full py-3 hover:cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span className="text-base">Informations</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href={"/account/reservation"} className="flex">
+                    <DropdownMenuItem className="w-full py-3 hover:cursor-pointer">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      <span className="text-base">Réservations</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href={"/account/settings"} className="flex">
+                    <DropdownMenuItem className="w-full py-3 hover:cursor-pointer">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span className="text-base">Paramètres</span>
+                    </DropdownMenuItem>
+                  </Link>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+
+                <div onClick={Deconnexion}>
+                  <DropdownMenuItem className="w-ful py-3 hover:cursor-pointer">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span className="text-base font-bold">Déconnexion</span>
+                  </DropdownMenuItem>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
         ) : (
           <Link href={"/sign-in"}>
             <Button variant={"ghost"} className="text-base font-bold">
@@ -70,7 +144,9 @@ export default function Navbar() {
 
       {/* Mobile */}
 
-      <nav className={`flex h-[80px] w-screen justify-center md:hidden`}>
+      <nav
+        className={`flex h-[80px] w-screen justify-center border-b-2 md:hidden`}
+      >
         <div className="z-[100] flex w-11/12 items-center justify-between">
           <Link
             href={"/"}
@@ -89,16 +165,32 @@ export default function Navbar() {
         >
           <div className="h-[80px]"></div>
           <div className="mt-10 flex w-screen flex-col items-center gap-8 text-xl font-medium">
-            <Link href="/" onClick={() => setOpen(false)}>
+            <Link
+              href={`/`}
+              onClick={() => setOpen(false)}
+              className="underline"
+            >
               Accueil
             </Link>
-            <Link href="/#tarifs" onClick={() => setOpen(false)}>
+            <Link
+              href={`/#tarifs`}
+              onClick={() => setOpen(false)}
+              className="underline"
+            >
               Tarifs
             </Link>
-            <Link href="/appointment" onClick={() => setOpen(false)}>
+            <Link
+              href={`/appointment`}
+              onClick={() => setOpen(false)}
+              className="underline"
+            >
               Rendez-vous
             </Link>
-            <Link href="/#contact" onClick={() => setOpen(false)}>
+            <Link
+              href={`/#contact`}
+              onClick={() => setOpen(false)}
+              className="underline"
+            >
               Contact
             </Link>
             <Separator className="h-[1px] w-2/3 bg-white" />
@@ -106,13 +198,33 @@ export default function Navbar() {
               <Link href={"#"}>Chargement</Link>
             ) : status == "authenticated" ? (
               <>
-                <Link
-                  href={"/account/information"}
-                  onClick={() => setOpen(false)}
-                >
-                  Mon compte
-                </Link>
-                <p onClick={Deconnexion}>Déconnexion</p>
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="item-1">
+                    <AccordionTrigger className="w-[145px]">
+                      Mon compte
+                    </AccordionTrigger>
+                    <AccordionContent className="flex flex-col items-center gap-5 text-lg underline">
+                      {lstAccount.map((account) => (
+                        <Link
+                          href={
+                            account == "Réservations"
+                              ? `/account/reservation`
+                              : account == "Paramètres"
+                                ? "/account/settings"
+                                : `/account/information`
+                          }
+                          key={account}
+                          onClick={() => setOpen(false)}
+                        >
+                          {account}
+                        </Link>
+                      ))}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+                <p onClick={Deconnexion} className="underline">
+                  Déconnexion
+                </p>
               </>
             ) : (
               <Link href="/sign-in" onClick={() => setOpen(false)}>

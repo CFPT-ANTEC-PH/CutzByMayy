@@ -18,7 +18,7 @@ export default async function Home() {
     { name: "Coloration", price: "40€" },
   ];
   return (
-    <main>
+    <main className="max-md:mt-[20px]">
       <section>
         <AuroraBGHome />
       </section>

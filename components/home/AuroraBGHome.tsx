@@ -10,7 +10,7 @@ import ShinyButton from "../magicui/shiny-button";
 export default function AuroraBGHome() {
   return (
     <div className="flex h-[80vh] justify-center">
-      <div className="flex w-2/3 items-center justify-between max-lg:flex-col max-lg:gap-7">
+      <div className="flex w-2/3 max-w-[1200px] items-center justify-between max-lg:flex-col max-lg:gap-7">
         <div className="flex flex-col gap-8 max-lg:w-2/3 max-lg:min-w-[300px] max-lg:gap-4">
           <h1 className="max-lg:w-lg max-w-md text-4xl font-bold dark:text-red-500">
             Bienvenue chez CutzByMayy
