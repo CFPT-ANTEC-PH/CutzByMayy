@@ -8,7 +8,7 @@ export async function POST(request: Request, res: Response) {
   const { email, userFirstname, date } = await request.json();
 
   const { data, error } = await resend.emails.send({
-    from: "Acme <onboarding@resend.dev>",
+    from: "Acme <noreply@simoncdt.ch>",
     to: [email],
     subject: "La réservation est carré!",
     html: render(ReservationMail({ userFirstname, date })),

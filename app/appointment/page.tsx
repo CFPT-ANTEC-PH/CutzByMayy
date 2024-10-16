@@ -85,7 +85,7 @@ export default function Page() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: "simon.cdt@eduge.ch",
+            email: session?.user.email,
             userFirstname: session?.user.name,
             date: selectedTime,
           }),
