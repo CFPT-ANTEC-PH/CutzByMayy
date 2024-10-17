@@ -15,7 +15,8 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { getUserByCode, updateVerifyCode } from "@/lib/ActionUsers";
-import { set } from "date-fns";
+import { Loader2 } from "lucide-react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -33,13 +34,30 @@ export default function Page() {
       const verify = await getUserByCode(parseInt(code, 10));
       if (verify !== false) {
         await updateVerifyCode(verify.email);
-        router.push("sign-in");
+
+        const signInData = await signIn("credentials", {
+          email: verify.email,
+          password: verify.password,
+          redirect: false,
+        });
+        console.log(verify.password);
+
+        if (signInData?.error) {
+          router.push("/sign-in");
+          router.refresh();
+        } else {
+          router.push("/");
+          router.refresh();
+        }
       } else {
         setLoading(false);
+        setError("Ce n'est pas le bon code. Veuillez réessayer.");
       }
     } catch (error) {
       setLoading(false);
-      setError("Une erreur est survenue lors de la vérification du code");
+      setError(
+        "Une erreur est survenue lors de la vérification du code. Veuillez réessayer.",
+      );
     }
   };
 
@@ -69,11 +87,21 @@ export default function Page() {
             <InputOTPSlot index={5} />
           </InputOTPGroup>
         </InputOTP>
-        <Button onClick={handleVerify} className="mt-4 w-full">
-          Vérifier
-        </Button>
+        {loading ? (
+          <Button onClick={handleVerify} className="mt-4 w-full" disabled>
+            <Loader2 className="animate-spin" />
+          </Button>
+        ) : (
+          <Button onClick={handleVerify} className="mt-4 w-full">
+            Vérifier
+          </Button>
+        )}
       </CardContent>
-      <CardFooter></CardFooter>
+      <CardFooter>
+        {error !== "" ? (
+          <small className="w-full text-center text-red-500">{error}</small>
+        ) : null}
+      </CardFooter>
     </Card>
   );
 }

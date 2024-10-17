@@ -14,7 +14,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState, useEffect } from "react";
-import { getAvailibility, getAvailibilityById } from "@/lib/ActionAvailbility";
+import {
+  getAvailibility,
+  getAvailibilityById,
+  updateAvailibilityUserId,
+} from "@/lib/ActionAvailbility";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,11 +35,6 @@ import { useSession } from "next-auth/react";
 import { stat } from "fs";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  createReservation,
-  getReservationByDate,
-  getReservationById,
-} from "@/lib/ActionReservation";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -53,25 +52,90 @@ export default function Page() {
     resolver: zodResolver(zodFormSchema),
   });
 
+  const [date, setDate] = useState<Date | undefined>(new Date());
+
+  const [open, setOpen] = useState(false);
+  const [selectedDispo, setSelectedDispo] = useState<string | null>(null);
+
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [selectedTime, setSelectedTime] = useState<Date | null | undefined>(
+    null,
+  );
+
+  const disablePastDates = (date: Date) => {
+    return isBefore(startOfDay(date), startOfDay(new Date()));
+  };
+
+  const handleDateSelect = (selectedDate: Date | undefined) => {
+    setDate(selectedDate);
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    setData([]);
+    const getData = async () => {
+      try {
+        setLoading(true);
+        if (date) {
+          const avaibility = await getAvailibility(date?.toISOString());
+          setData(avaibility);
+        }
+      } catch (err) {
+        setError("Une erreur est survenue.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getData();
+  }, [date]);
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        if (selectedDispo) {
+          const result = await getAvailibilityById(selectedDispo);
+          setSelectedTime(result?.start_time);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    getData();
+  }, [selectedDispo]);
+
+  const handleDispoChange = (dispoId: string) => {
+    setSelectedDispo(dispoId === selectedDispo ? null : dispoId);
+  };
+
   const handleSubmitForm = async (data: FormSchema) => {
     if (!selectedDispo) {
       toast({
         variant: "destructive",
-        description: "Une erreur est survenue. Veuillez réessayer.",
+        description: "Il faut choisir un horaire pour valider la réservation.",
       });
       return;
     }
-    const addReservation = await createReservation(selectedDispo);
+    if (session?.user.id !== undefined) {
+      const updateAvailability = await updateAvailibilityUserId(
+        session?.user.id,
+        selectedDispo,
+      );
 
-    if (!addReservation) {
-      toast({
-        variant: "destructive",
-        description: "Une erreur est survenue. Veuillez réessayer.",
-      });
-    } else {
-      await fetchEmail();
-      router.push("/account/reservation");
-      router.refresh();
+      if (updateAvailability !== false) {
+        toast({
+          variant: "destructive",
+          description: "Une erreur est survenue. Veuillez réessayer.",
+        });
+      } else {
+        await fetchEmail();
+        router.push("/account/reservation");
+        router.refresh();
+      }
     }
   };
 
@@ -108,78 +172,6 @@ export default function Page() {
         description: "L'envoie de l'email a échoué.",
       });
     }
-  };
-
-  const [date, setDate] = useState<Date | undefined>(new Date());
-
-  const [open, setOpen] = useState(false);
-  const [selectedDispo, setSelectedDispo] = useState<string | null>(null);
-
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [selectedTime, setSelectedTime] = useState<Date | null | undefined>(
-    null,
-  );
-
-  const disablePastDates = (date: Date) => {
-    return isBefore(startOfDay(date), startOfDay(new Date()));
-  };
-
-  const handleDateSelect = (selectedDate: Date | undefined) => {
-    setDate(selectedDate);
-    setOpen(false);
-  };
-
-  useEffect(() => {
-    setData([]);
-    const getData = async () => {
-      try {
-        setLoading(true);
-        if (date) {
-          const avaibility = await getAvailibility(date?.toISOString());
-          const reservation = await getReservationByDate(date?.toISOString());
-          const data = avaibility.map((dispo) => {
-            const isReserved = reservation.some(
-              (res: any) => res.availability_id === dispo.id,
-            );
-            return { ...dispo, isReserved };
-          });
-          setData(data);
-        }
-      } catch (err) {
-        setError("Une erreur est survenue.");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getData();
-  }, [date]);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        if (selectedDispo) {
-          const result = await getAvailibilityById(selectedDispo);
-          setSelectedTime(result?.start_time);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    getData();
-  }, [selectedDispo]);
-
-  const handleDispoChange = (dispoId: string) => {
-    setSelectedDispo(dispoId === selectedDispo ? null : dispoId);
-  };
-
-  const isAvailable = async (idAvailibility: string) => {
-    const isGood = await getReservationById(idAvailibility);
-    return isGood;
   };
   return (
     <main className="my-24 flex w-full flex-col items-center">
@@ -242,7 +234,9 @@ export default function Page() {
                       checked={selectedDispo === dispo.id}
                       onChange={() => handleDispoChange(dispo.id)}
                       className="hidden"
-                      disabled={dispo.isReserved} // Désactiver si réservé
+                      disabled={
+                        dispo.client_id !== null && dispo.guest_id !== null
+                      }
                     />
                     <label
                       htmlFor={dispo.id}

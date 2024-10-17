@@ -20,6 +20,7 @@ import { signIn } from "next-auth/react";
 import { useToast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { updateCodeUser } from "@/lib/ActionUsers";
 
 type FormSchema = {
   email: string;
@@ -27,6 +28,37 @@ type FormSchema = {
 };
 
 export default function SignInForm() {
+  const fetchEmail = async (code: Number, email: string) => {
+    try {
+      const response = await fetch("/api/mail/verifyMail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          code: code,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast({
+          variant: "destructive",
+          description: "L'envoie de l'email a échoué.",
+        });
+      }
+      return true;
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        description: "L'envoie de l'email a échoué.",
+      });
+    }
+  };
+
   const { toast } = useToast();
   const router = useRouter();
   const zodFormSchema: ZodType<FormSchema> = z.object({
@@ -51,11 +83,25 @@ export default function SignInForm() {
       redirect: false,
     });
     if (signInData?.error) {
-      toast({
-        variant: "destructive",
-        description: "Connexion raté. Veuillez réessayer.",
-      });
-      console.log(signInData.error);
+      if (signInData.error === "verify-code") {
+        const code = Math.floor(100000 + Math.random() * 900000);
+        const email = data.email;
+        const response = await fetchEmail(code, email);
+        if (response) {
+          await updateCodeUser(email, code);
+          router.push("/verify-code");
+        } else {
+          toast({
+            variant: "destructive",
+            description: "L'envoie de l'email a échoué.",
+          });
+        }
+      } else {
+        toast({
+          variant: "destructive",
+          description: "Connexion raté. Veuillez réessayer.",
+        });
+      }
     } else {
       router.push("/");
       router.refresh();

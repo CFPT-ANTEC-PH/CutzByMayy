@@ -18,13 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  deleteReservation,
-  getAllReservationsByUser,
-  getAllReservationsByUserConfirmed,
-  getAllReservationsByUserDateUpcoming,
-  getReservationById,
-} from "@/lib/ActionReservation";
 import { CalendarIcon, ClockIcon, LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
@@ -52,25 +45,31 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  deleteReservation,
+  getAllAvailabilitiesByUser,
+  getAllAvailabiltysByUserDateUpcoming,
+  getAvailibilityById,
+  getReservationById,
+} from "@/lib/ActionAvailbility";
 
-type Reservation = {
+type Availability = {
   id: string;
-  client_id: string;
   start_time: Date;
   end_time: Date;
-  status: "PENDING" | "CONFIRMED" | "CANCELED";
-  availability_id: string;
+  user_id: string;
+  guest_id: string;
 };
 
 export default function Page() {
-  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [reservations, setReservations] = useState<Availability[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isChecked, setIsChecked] = useState<boolean>();
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [reservationId, setReservationId] = useState<string | null>(null);
   const [infoReservation, setinfoReservation] = useState<
-    Reservation | undefined
+    Availability | undefined
   >();
 
   const { toast } = useToast();
@@ -79,11 +78,11 @@ export default function Page() {
     const fetchReservations = async () => {
       try {
         setLoading(true);
-        const data = await getAllReservationsByUser();
+        const data = await getAllAvailabilitiesByUser();
         if (Array.isArray(data) && data.length > 0 && "error" in data[0]) {
           setError(data[0].error);
         } else {
-          setReservations(data as Reservation[]);
+          setReservations(data as Availability[]);
         }
       } catch (err) {
         console.error(err);
@@ -103,13 +102,13 @@ export default function Page() {
       try {
         setLoading(true);
         const data = isChecked
-          ? await getAllReservationsByUserDateUpcoming()
-          : await getAllReservationsByUser();
+          ? await getAllAvailabiltysByUserDateUpcoming()
+          : await getAllAvailabilitiesByUser();
 
         if (Array.isArray(data) && data.length > 0 && "error" in data[0]) {
           setError(data[0].error);
         } else {
-          setReservations(data as Reservation[]);
+          setReservations(data as Availability[]);
         }
       } catch (err) {
         console.error(err);
@@ -145,23 +144,23 @@ export default function Page() {
     }
   };
 
-  useEffect(() => {
-    const fetchReservation = async () => {
-      setLoading(true);
-      try {
-        if (reservationId !== null) {
-          const reservation = await getReservationById(reservationId);
-          if (reservation != null && reservation != false) {
-            setinfoReservation(reservation);
-          } else {
-            setinfoReservation(undefined);
-          }
-          setLoading(false);
-        }
-      } catch (error) {}
-    };
-    fetchReservation();
-  }, [reservationId]);
+  // useEffect(() => {
+  //   const fetchReservation = async () => {
+  //     setLoading(true);
+  //     try {
+  //       if (reservationId !== null) {
+  //         const reservation = await getReservationById(reservationId);
+  //         if (reservation != null && reservation != false) {
+  //           setinfoReservation(reservation);
+  //         } else {
+  //           setinfoReservation(undefined);
+  //         }
+  //         setLoading(false);
+  //       }
+  //     } catch (error) {}
+  //   };
+  //   fetchReservation();
+  // }, [reservationId]);
 
   return (
     <>
@@ -231,9 +230,7 @@ export default function Page() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center capitalize">
-                          {reservation.status === "CONFIRMED"
-                            ? "Confirmé"
-                            : "Annulé"}
+                          Confirmé
                         </div>
                       </TableCell>
                       <TableCell>
@@ -347,11 +344,7 @@ export default function Page() {
                     </div>
                     <p className="flex">
                       La réservation est&nbsp;
-                      <p className="font-bold">
-                        {infoReservation.status == "CONFIRMED"
-                          ? "confirmé"
-                          : "annulé"}
-                      </p>
+                      <p className="font-bold">confirmé"</p>
                       {"."}
                     </p>
                   </div>

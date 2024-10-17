@@ -36,8 +36,12 @@ export const authOptions: NextAuthOptions = {
           credentials.password,
           existingUser.password,
         );
-        if (!passwordMatch) {
+        if (!passwordMatch && existingUser.password !== credentials.password) {
           return null;
+        }
+
+        if (existingUser.emailVerified === false) {
+          throw new Error("verify-code");
         }
 
         return {
@@ -46,6 +50,7 @@ export const authOptions: NextAuthOptions = {
           name: existingUser.name,
           first_name: existingUser.first_name,
           phone_number: existingUser.phone_number,
+          role: existingUser.role,
         };
       },
     }),
@@ -60,6 +65,7 @@ export const authOptions: NextAuthOptions = {
           first_name: user.first_name,
           phone_number: user.phone_number,
           email: user.email,
+          role: user.role,
         };
       }
       return token;
@@ -73,7 +79,8 @@ export const authOptions: NextAuthOptions = {
         updatedUser?.id !== undefined &&
         updatedUser?.name !== undefined &&
         updatedUser?.first_name !== undefined &&
-        updatedUser?.phone_number !== undefined
+        updatedUser?.phone_number !== undefined &&
+        updatedUser?.role !== undefined
       ) {
         return {
           ...session,
@@ -84,6 +91,7 @@ export const authOptions: NextAuthOptions = {
             first_name: updatedUser?.first_name,
             phone_number: updatedUser?.phone_number,
             email: updatedUser?.email,
+            role: updatedUser?.role,
           },
         };
       } else {
@@ -96,6 +104,7 @@ export const authOptions: NextAuthOptions = {
             first_name: user?.first_name ?? token?.first_name,
             phone_number: user?.phone_number ?? token?.phone_number,
             email: user?.email ?? token?.email,
+            role: user?.role ?? token?.role,
           },
         };
       }
