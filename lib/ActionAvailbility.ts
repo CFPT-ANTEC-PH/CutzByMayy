@@ -6,22 +6,18 @@ import { revalidatePath } from "next/cache";
 import { getUser } from "./ActionUsers";
 
 export const getAvailibility = async (date: string) => {
-  // Convertir la date en objet Date
   const selectedDate = new Date(date);
 
-  // Vérifier si la date est valide
   if (isNaN(selectedDate.getTime())) {
     throw new Error("Invalid date format");
   }
 
-  // Obtenir le début et la fin de la journée
   const startOfDay = new Date(selectedDate);
-  startOfDay.setHours(0, 0, 0, 0); // 00:00:00
+  startOfDay.setHours(0, 0, 0, 0);
 
   const endOfDay = new Date(selectedDate);
-  endOfDay.setHours(23, 59, 59, 999); // 23:59:59
+  endOfDay.setHours(23, 59, 59, 999);
 
-  // Requête pour récupérer toutes les disponibilités
   const availabilities = await db.availability.findMany({
     where: {
       start_time: {
@@ -30,6 +26,9 @@ export const getAvailibility = async (date: string) => {
       end_time: {
         lte: endOfDay,
       },
+    },
+    orderBy: {
+      start_time: "asc",
     },
   });
 
@@ -67,7 +66,6 @@ export const updateAvailibilityUserId = async (user_id: string, id: string) => {
       availabilityCheck?.guest_id !== null
     ) {
       throw new Error("Availability already taken");
-      return false;
     } else {
       const availability = await db.availability.update({
         where: { id: idAvailability },

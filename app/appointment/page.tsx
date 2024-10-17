@@ -37,8 +37,19 @@ import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import AlertGuest from "@/components/AlertGuest";
 
 type FormSchema = {};
+
+type Availability = {
+  id: string;
+  start_time: Date;
+  end_time: Date;
+  user_id: string;
+  guest_id: string;
+};
 
 export default function Page() {
   const { data: session, status } = useSession();
@@ -57,7 +68,7 @@ export default function Page() {
   const [open, setOpen] = useState(false);
   const [selectedDispo, setSelectedDispo] = useState<string | null>(null);
 
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Availability[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -81,7 +92,7 @@ export default function Page() {
         setLoading(true);
         if (date) {
           const avaibility = await getAvailibility(date?.toISOString());
-          setData(avaibility);
+          setData(avaibility as Availability[]);
         }
       } catch (err) {
         setError("Une erreur est survenue.");
@@ -90,7 +101,6 @@ export default function Page() {
         setLoading(false);
       }
     };
-
     getData();
   }, [date]);
 
@@ -126,7 +136,7 @@ export default function Page() {
         selectedDispo,
       );
 
-      if (updateAvailability !== false) {
+      if (updateAvailability == false) {
         toast({
           variant: "destructive",
           description: "Une erreur est survenue. Veuillez réessayer.",
@@ -235,7 +245,7 @@ export default function Page() {
                       onChange={() => handleDispoChange(dispo.id)}
                       className="hidden"
                       disabled={
-                        dispo.client_id !== null && dispo.guest_id !== null
+                        dispo.user_id !== null || dispo.guest_id !== null
                       }
                     />
                     <label
@@ -245,7 +255,7 @@ export default function Page() {
                         selectedDispo === dispo.id
                           ? "border-white bg-slate-700"
                           : "border",
-                        dispo.isReserved
+                        dispo.user_id !== null || dispo.guest_id !== null
                           ? "bg-slate-950 text-gray-600 hover:cursor-not-allowed lg:hover:bg-slate-950" // Style pour les items réservés
                           : "",
                       )}
@@ -311,13 +321,17 @@ export default function Page() {
                     Vous n&apos;êtes pas connecté
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Vous devez vous connecter pour réserver un rendez-vous.
+                    Vous devez vous connecter pour réserver un rendez-vous ou le
+                    faire en tant qu'invté.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <Link href={"/sign-in"}>
-                    <AlertDialogAction>S&apos;identifier</AlertDialogAction>
-                  </Link>
+                  <div className="flex w-full justify-between">
+                    <AlertGuest />
+                    <Link href={"/sign-in"}>
+                      <AlertDialogAction>S&apos;identifier</AlertDialogAction>
+                    </Link>
+                  </div>
                 </AlertDialogFooter>
               </AlertDialogContent>
             )}
