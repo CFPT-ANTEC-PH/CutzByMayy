@@ -142,7 +142,7 @@ export default function Page() {
           const reservation = await getReservationByDate(date?.toISOString());
           const data = avaibility.map((dispo) => {
             const isReserved = reservation.some(
-              (res) => res.availability_id === dispo.id,
+              (res: any) => res.availability_id === dispo.id,
             );
             return { ...dispo, isReserved };
           });

@@ -15,15 +15,6 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import * as React from "react";
 
-type Reservation = {
-  id: string;
-  client_id: string;
-  start_time: Date;
-  end_time: Date;
-  status: "PENDING" | "CONFIRMED" | "CANCELED";
-  availability_id: string;
-};
-
 interface ReservationMailProps {
   userFirstname: string;
   date: Date;

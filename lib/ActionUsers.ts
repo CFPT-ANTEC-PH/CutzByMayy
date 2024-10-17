@@ -54,9 +54,6 @@ export const updateUser = async (formData: FormData) => {
     );
     return false;
   } finally {
-
-
-
     return true;
   }
 };
@@ -107,4 +104,57 @@ export const getUserFromDatabase = async (id: string) => {
     where: { id },
   });
   return user;
-}
+};
+
+export const updateCodeUser = async (email: string, newCode: number) => {
+  try {
+    await db.user.update({
+      where: { email },
+      data: {
+        code: newCode,
+      },
+    });
+    return true;
+  } catch (e) {
+    console.error(
+      "Une erreur est survenue lors de la modification du code " + e,
+    );
+    return false;
+  }
+};
+
+export const getUserByCode = async (code: number) => {
+  try {
+    const user = await db.user.findFirst({
+      where: { code },
+    });
+    if (user == null) {
+      return false;
+    }
+    return user;
+  } catch (error) {
+    console.error(
+      "Une erreur est survenue lors de la recherche de l'utilisateur par code : " +
+        error,
+    );
+    return false;
+  }
+};
+
+export const updateVerifyCode = async (email: string) => {
+  try {
+    const update = await db.user.update({
+      where: { email },
+      data: {
+        emailVerified: true,
+      },
+    });
+    return true;
+  } catch (error) {
+    console.error(
+      "Une erreur est survenue lors de la mise à jour du code de vérification : " +
+        error,
+    );
+    return false;
+  }
+};

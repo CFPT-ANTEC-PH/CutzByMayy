@@ -20,6 +20,7 @@ import { signIn } from "next-auth/react";
 import { useToast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { updateCodeUser } from "@/lib/ActionUsers";
 
 type FormSchema = {
   name: string;
@@ -75,13 +76,63 @@ export default function SignUpForm() {
     });
 
     if (response.ok) {
-      router.push("sign-in");
+      const code = Math.floor(100000 + Math.random() * 900000);
+      const sendEmail = await fetchEmail(code, data.email);
+      if (sendEmail) {
+        const updateCode = await updateCodeUser(data.email, code);
+        if (updateCode) {
+          router.push("verify-code");
+        } else {
+          toast({
+            variant: "destructive",
+            description: "Big problem",
+          });
+          console.error("Registration failed");
+        }
+      } else {
+        toast({
+          variant: "destructive",
+          description: "L'envoie de l'email a échoué.",
+        });
+        console.error("Registration failed");
+      }
     } else {
       toast({
         variant: "destructive",
         description: "L'inscription a raté. Veuillez reéssayer.",
       });
       console.error("Registration failed");
+    }
+  };
+
+  const fetchEmail = async (code: Number, email: string) => {
+    try {
+      const response = await fetch("/api/mail/verifyMail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          code: code,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast({
+          variant: "destructive",
+          description: "L'envoie de l'email a échoué.",
+        });
+      }
+      return true;
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        description: "L'envoie de l'email a échoué.",
+      });
     }
   };
 
