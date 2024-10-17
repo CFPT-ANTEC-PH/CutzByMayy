@@ -37,6 +37,7 @@ const VerifyEmail = ({ code }: MailProps) => {
             </Link>{" "}
             s'il y a un problème avec le code.
           </Text>
+          <Text style={footerText}>Veuillez ne pas répondre à ce mail.</Text>
         </Container>
       </Body>
     </Html>
@@ -53,6 +54,10 @@ const main = {
   backgroundColor: "#ffffff",
   fontFamily: "HelveticaNeue,Helvetica,Arial,sans-serif",
   textAlign: "center" as const,
+};
+
+const footerText = {
+  fontSize: "12px",
 };
 
 const container = {
@@ -90,6 +95,7 @@ const codeContainer = {
 };
 
 const codeStyle = {
+  fontFamily: "monospace",
   color: "#000",
   display: "inline-block",
   paddingBottom: "8px",
