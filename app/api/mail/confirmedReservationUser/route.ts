@@ -1,4 +1,4 @@
-import ReservationMail from "@/emails";
+import ReservationMail from "@/emails/ConfirmedReservationUser";
 import { render } from "@react-email/render";
 import { Resend } from "resend";
 

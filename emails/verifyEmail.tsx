@@ -19,7 +19,7 @@ const VerifyEmail = ({ code }: MailProps) => {
   return (
     <Html>
       <Head />
-      <Preview>Sign in to simoncdt.ch</Preview>
+      <Preview>S&apos;inscrire chez simoncdt.ch</Preview>
       <Body style={main}>
         <Container style={container}>
           <Text style={company}>CutzByMayy</Text>

@@ -27,6 +27,7 @@ model Guest {
   email          String
   phone_number   String
   code           Int?
+  id_availability String?
   availabilities Availability[] // Relation avec le modèle Availability
 }
 

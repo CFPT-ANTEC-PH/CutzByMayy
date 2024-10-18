@@ -18,36 +18,14 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import {
-  Calendar,
-  Cloud,
-  CreditCard,
-  Github,
-  Keyboard,
-  LifeBuoy,
-  LogOut,
-  Mail,
-  MessageSquare,
-  Plus,
-  PlusCircle,
-  Settings,
-  User,
-  UserPlus,
-  Users,
-} from "lucide-react";
+import { Calendar, LogOut, User } from "lucide-react";
 
 export default function Navbar() {
   const lstMenu = ["Accueil", "Tarifs", "Rendez-vous", "Contact"];
-  const lstAccount = ["Informations", "Réservations", "Paramètres"];
+  const lstAccount = ["Informations", "Réservations"];
 
   const router = useRouter();
 
@@ -113,12 +91,6 @@ export default function Navbar() {
                     <DropdownMenuItem className="w-full py-3 hover:cursor-pointer">
                       <Calendar className="mr-2 h-4 w-4" />
                       <span className="text-base">Réservations</span>
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href={"/account/settings"} className="flex">
-                    <DropdownMenuItem className="w-full py-3 hover:cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span className="text-base">Paramètres</span>
                     </DropdownMenuItem>
                   </Link>
                 </DropdownMenuGroup>
@@ -203,15 +175,13 @@ export default function Navbar() {
                     <AccordionTrigger className="w-[145px]">
                       Mon compte
                     </AccordionTrigger>
-                    <AccordionContent className="flex flex-col items-center gap-5 text-lg underline">
+                    <AccordionContent className="mt-5 flex flex-col items-center gap-10 text-lg underline">
                       {lstAccount.map((account) => (
                         <Link
                           href={
                             account == "Réservations"
                               ? `/account/reservation`
-                              : account == "Paramètres"
-                                ? "/account/settings"
-                                : `/account/information`
+                              : `/account/information`
                           }
                           key={account}
                           onClick={() => setOpen(false)}

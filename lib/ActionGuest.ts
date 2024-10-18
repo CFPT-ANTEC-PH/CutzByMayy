@@ -12,19 +12,39 @@ export const createGuest = async (
   name: string,
   phoneNumber: string,
   code: number,
+  id_availability: string,
 ) => {
   try {
-    const user = await db.guest.create({
+    const guest = await db.guest.create({
       data: {
         email: email,
         first_name: name,
         phone_number: phoneNumber,
         code: code,
+        id_availability: id_availability,
       },
     });
-    return user;
+    return guest;
   } catch (error) {
     console.error(error);
+    return false;
+  }
+};
+
+export const getGuestByCode = async (code: number) => {
+  try {
+    const guest = await db.guest.findFirst({
+      where: { code },
+    });
+    if (guest == null) {
+      return false;
+    }
+    return guest;
+  } catch (error) {
+    console.error(
+      "Une erreur est survenue lors de la recherche de l'utilisateur par code : " +
+        error,
+    );
     return false;
   }
 };

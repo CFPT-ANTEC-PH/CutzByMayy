@@ -1,8 +1,6 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { getUser } from "./ActionUsers";
 
 export const getAvailibility = async (date: string) => {
@@ -35,21 +33,13 @@ export const getAvailibility = async (date: string) => {
   return availabilities;
 };
 
-export const getAvailibilityById = async (idAvailibility: string) => {
-  const id = idAvailibility;
-  const availability = await db.availability.findUnique({
-    where: { id: id },
-  });
-  return availability;
-};
-
-export const getReservationById = async (idReservation: string) => {
+export const getAvailibilityById = async (idAvailability: string) => {
   try {
-    const id = idReservation;
-    const reservation = await db.availability.findUnique({
+    const id = idAvailability;
+    const availability = await db.availability.findUnique({
       where: { id: id },
     });
-    return reservation;
+    return availability;
   } catch (error) {
     console.error(error);
     return false;
@@ -62,8 +52,12 @@ export const updateAvailibilityUserId = async (user_id: string, id: string) => {
     const userId = user_id;
     const availabilityCheck = await getAvailibilityById(idAvailability);
     if (
-      (availabilityCheck !== null && availabilityCheck.user_id !== null) ||
-      availabilityCheck?.guest_id !== null
+      (availabilityCheck !== false &&
+        availabilityCheck !== null &&
+        availabilityCheck.user_id !== null) ||
+      (availabilityCheck !== false &&
+        availabilityCheck !== null &&
+        availabilityCheck.guest_id !== null)
     ) {
       throw new Error("Availability already taken");
     } else {
@@ -84,14 +78,14 @@ export const updateAvailibilityUserId = async (user_id: string, id: string) => {
 export const getAllAvailabilitiesByUser = async () => {
   try {
     const user = await getUser();
-    const reservations = await db.availability.findMany({
+    const availabilities = await db.availability.findMany({
       where: { user_id: user?.id },
       orderBy: { start_time: "desc" },
     });
-    if (!reservations) {
+    if (!availabilities) {
       return [];
     }
-    return reservations;
+    return availabilities;
   } catch (error) {
     console.error(error);
     return [{ error: "error" }];
@@ -101,7 +95,7 @@ export const getAllAvailabilitiesByUser = async () => {
 export const getAllAvailabiltysByUserDateUpcoming = async () => {
   try {
     const user = await getUser();
-    const reservations = await db.availability.findMany({
+    const availabilities = await db.availability.findMany({
       where: {
         user_id: user?.id,
         start_time: {
@@ -109,14 +103,14 @@ export const getAllAvailabiltysByUserDateUpcoming = async () => {
         },
       },
     });
-    return reservations;
+    return availabilities;
   } catch (error) {
     console.error(error);
     return [{ error: "error" }];
   }
 };
 
-export const deleteReservation = async (id: string) => {
+export const deleteAvailability = async (id: string) => {
   try {
     const availability = await db.availability.update({
       where: { id },
@@ -125,6 +119,38 @@ export const deleteReservation = async (id: string) => {
       },
     });
     return availability;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+export const updateAvailibilityGuestId = async (
+  user_id: string,
+  id: string,
+) => {
+  try {
+    const idAvailability = id;
+    const guestId = user_id;
+    const availabilityCheck = await getAvailibilityById(idAvailability);
+    if (
+      (availabilityCheck !== null &&
+        availabilityCheck !== false &&
+        availabilityCheck.user_id !== null) ||
+      (availabilityCheck !== null &&
+        availabilityCheck !== false &&
+        availabilityCheck.guest_id !== null)
+    ) {
+      throw new Error("Availability already taken");
+    } else {
+      const availability = await db.availability.update({
+        where: { id: idAvailability },
+        data: {
+          guest_id: guestId,
+        },
+      });
+      return availability;
+    }
   } catch (error) {
     console.error(error);
     return false;

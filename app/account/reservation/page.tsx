@@ -46,11 +46,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
-  deleteReservation,
+  deleteAvailability,
   getAllAvailabilitiesByUser,
   getAllAvailabiltysByUserDateUpcoming,
   getAvailibilityById,
-  getReservationById,
 } from "@/lib/ActionAvailbility";
 
 type Availability = {
@@ -62,27 +61,27 @@ type Availability = {
 };
 
 export default function Page() {
-  const [reservations, setReservations] = useState<Availability[]>([]);
+  const [avaibilities, setAvaibilities] = useState<Availability[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isChecked, setIsChecked] = useState<boolean>();
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingId, setLoadingId] = useState<string | null>(null);
-  const [reservationId, setReservationId] = useState<string | null>(null);
-  const [infoReservation, setinfoReservation] = useState<
+  const [availbilityId, setAvailabilityId] = useState<string | null>(null);
+  const [infoAvailability, setInfoAvailability] = useState<
     Availability | undefined
   >();
 
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchReservations = async () => {
+    const fetchAvailabilities = async () => {
       try {
         setLoading(true);
         const data = await getAllAvailabilitiesByUser();
         if (Array.isArray(data) && data.length > 0 && "error" in data[0]) {
           setError(data[0].error);
         } else {
-          setReservations(data as Availability[]);
+          setAvaibilities(data as Availability[]);
         }
       } catch (err) {
         console.error(err);
@@ -94,11 +93,11 @@ export default function Page() {
       }
     };
 
-    fetchReservations();
+    fetchAvailabilities();
   }, []);
 
   useEffect(() => {
-    const fetchReservations = async () => {
+    const fetchAvailabilities = async () => {
       try {
         setLoading(true);
         const data = isChecked
@@ -108,7 +107,7 @@ export default function Page() {
         if (Array.isArray(data) && data.length > 0 && "error" in data[0]) {
           setError(data[0].error);
         } else {
-          setReservations(data as Availability[]);
+          setAvaibilities(data as Availability[]);
         }
       } catch (err) {
         console.error(err);
@@ -120,19 +119,19 @@ export default function Page() {
       }
     };
 
-    fetchReservations();
+    fetchAvailabilities();
   }, [isChecked]);
 
   function handleCheckboxChange() {
     setIsChecked((prev) => !prev);
   }
 
-  const handleCancelReservation = async (reservationId: string) => {
-    setLoadingId(reservationId);
+  const handleCancelAvailability = async (availabilityId: string) => {
+    setLoadingId(availabilityId);
     try {
-      await deleteReservation(reservationId);
-      setReservations((prev) =>
-        prev.filter((reservation) => reservation.id !== reservationId),
+      await deleteAvailability(availabilityId);
+      setAvaibilities((prev) =>
+        prev.filter((availability) => availability.id !== availabilityId),
       );
       toast({ description: "Réservation annulée avec succès" });
       window.location.reload();
@@ -144,23 +143,23 @@ export default function Page() {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchReservation = async () => {
-  //     setLoading(true);
-  //     try {
-  //       if (reservationId !== null) {
-  //         const reservation = await getReservationById(reservationId);
-  //         if (reservation != null && reservation != false) {
-  //           setinfoReservation(reservation);
-  //         } else {
-  //           setinfoReservation(undefined);
-  //         }
-  //         setLoading(false);
-  //       }
-  //     } catch (error) {}
-  //   };
-  //   fetchReservation();
-  // }, [reservationId]);
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      setLoading(true);
+      try {
+        if (availbilityId !== null) {
+          const availability = await getAvailibilityById(availbilityId);
+          if (availability != null && availability != false) {
+            setInfoAvailability(availability as Availability);
+          } else {
+            setInfoAvailability(undefined);
+          }
+          setLoading(false);
+        }
+      } catch (error) {}
+    };
+    fetchAvailability();
+  }, [availbilityId]);
 
   return (
     <>
@@ -190,7 +189,7 @@ export default function Page() {
               <p className="text-center text-muted-foreground">
                 Chargement ...
               </p>
-            ) : reservations.length === 0 ? (
+            ) : avaibilities.length === 0 ? (
               <div className="flex flex-col gap-3">
                 <p className="text-center text-muted-foreground">
                   Vous n&apos;avez aucune réservation pour le moment.
@@ -213,19 +212,19 @@ export default function Page() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {reservations.map((reservation) => (
-                    <TableRow key={reservation.id}>
+                  {avaibilities.map((avaibilitie) => (
+                    <TableRow key={avaibilitie.id}>
                       <TableCell>
                         <div className="flex items-center">
                           <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                          {format(reservation.start_time, "dd/MM/yyyy")}
+                          {format(avaibilitie.start_time, "dd/MM/yyyy")}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center">
                           <ClockIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                          {format(reservation.start_time, "HH:mm")} -{" "}
-                          {format(reservation.end_time, "HH:mm")}
+                          {format(avaibilitie.start_time, "HH:mm")} -{" "}
+                          {format(avaibilitie.end_time, "HH:mm")}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -254,11 +253,11 @@ export default function Page() {
                               <AlertDialogAction
                                 className="bg-red-500 text-white hover:bg-red-600"
                                 onClick={() =>
-                                  handleCancelReservation(reservation.id)
+                                  handleCancelAvailability(avaibilitie.id)
                                 }
-                                disabled={loadingId === reservation.id}
+                                disabled={loadingId === avaibilitie.id}
                               >
-                                {loadingId === reservation.id ? (
+                                {loadingId === avaibilitie.id ? (
                                   <LoaderCircle className="m-auto animate-spin" />
                                 ) : (
                                   "Confirmer"
@@ -287,7 +286,7 @@ export default function Page() {
           <CardContent>
             {loading ? (
               <p className="font-bold">Chargement des réservations...</p>
-            ) : !loading && reservations.length === 0 ? (
+            ) : !loading && avaibilities.length === 0 ? (
               <div className="flex flex-col">
                 <p className="text-red-500">
                   Vous n&apos;avez pas de rendez-vous{"."}
@@ -302,14 +301,14 @@ export default function Page() {
             ) : (
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5">
-                  <Select onValueChange={(value) => setReservationId(value)}>
-                    <SelectTrigger id="reservation">
+                  <Select onValueChange={(value) => setAvailabilityId(value)}>
+                    <SelectTrigger id="availability">
                       <SelectValue placeholder="Séléctionne une réservation" />
                     </SelectTrigger>
                     <SelectContent position="popper">
-                      {reservations.map((reservation) => (
-                        <SelectItem key={reservation.id} value={reservation.id}>
-                          {format(reservation.start_time, "iiii dd LLLL, p", {
+                      {avaibilities.map((avaibilitie) => (
+                        <SelectItem key={avaibilitie.id} value={avaibilitie.id}>
+                          {format(avaibilitie.start_time, "iiii dd LLLL, p", {
                             locale: fr,
                           })}
                         </SelectItem>
@@ -317,7 +316,7 @@ export default function Page() {
                     </SelectContent>
                   </Select>
                 </div>
-                {infoReservation == undefined ? null : loading ? (
+                {infoAvailability == undefined ? null : loading ? (
                   <div className="flex flex-col gap-4">
                     <div>
                       <p>La date du rendez-vous :</p>
@@ -334,7 +333,7 @@ export default function Page() {
                       <p>La date du rendez-vous :</p>
                       <p className="font-bold">
                         {format(
-                          infoReservation.start_time,
+                          infoAvailability.start_time,
                           "eeee dd LLLL y à p",
                           {
                             locale: fr,
@@ -344,7 +343,7 @@ export default function Page() {
                     </div>
                     <p className="flex">
                       La réservation est&nbsp;
-                      <p className="font-bold">confirmé"</p>
+                      <p className="font-bold">"confirmé"</p>
                       {"."}
                     </p>
                   </div>
@@ -353,7 +352,7 @@ export default function Page() {
             )}
           </CardContent>
           <CardFooter className="flex justify-start">
-            {infoReservation !== undefined ? (
+            {infoAvailability !== undefined ? (
               loading ? (
                 <Button variant={"secondary"} disabled>
                   Annuler la réservation
@@ -378,11 +377,11 @@ export default function Page() {
                       <AlertDialogAction
                         className="bg-red-500 text-white hover:bg-red-600"
                         onClick={() =>
-                          handleCancelReservation(infoReservation.id)
+                          handleCancelAvailability(infoAvailability.id)
                         }
-                        disabled={loadingId === infoReservation.id}
+                        disabled={loadingId === infoAvailability.id}
                       >
-                        {loadingId === infoReservation.id ? (
+                        {loadingId === infoAvailability.id ? (
                           <LoaderCircle className="m-auto animate-spin" />
                         ) : (
                           "Confirmer"

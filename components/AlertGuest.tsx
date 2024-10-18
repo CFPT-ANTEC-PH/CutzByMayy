@@ -19,9 +19,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "./ui/use-toast";
 import { createGuest } from "@/lib/ActionGuest";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 interface ChildProps {
-  selectedTime: Date;
+  id_availlability: string;
 }
 
 type FormSchema = {
@@ -30,8 +32,9 @@ type FormSchema = {
   phoneNumber: string;
 };
 
-export default function AlertGuest() {
+export default function AlertGuest({ id_availlability }: ChildProps) {
   const { toast } = useToast();
+  const router = useRouter();
 
   const zodFormSchema: ZodType<FormSchema> = z.object({
     email: z.string().email("Email invalide"),
@@ -80,18 +83,31 @@ export default function AlertGuest() {
 
   const handleSubmitForm = async (data: FormSchema) => {
     try {
-      const code = Math.floor(1000 + Math.random() * 9000);
+      const code = Math.floor(100000 + Math.random() * 900000);
       const user = await createGuest(
         data.email,
         data.name,
         data.phoneNumber,
         code,
+        id_availlability,
       );
-      const email = await fetchEmail(code, data.email);
+      if (user !== false) {
+        const email = await fetchEmail(code, data.email);
+        if (email) {
+          router.push("/verify-guest");
+        }
+      } else {
+        toast({
+          variant: "destructive",
+          description:
+            "Une erreur est survenue lors de la création de l'utilisateur.",
+        });
+      }
     } catch (error) {
       console.error(error);
     }
   };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -114,7 +130,7 @@ export default function AlertGuest() {
                       type="email"
                       id="email"
                       placeholder="mail@example.com"
-                      className="w-[90%]"
+                      className="w-full"
                       {...register("email")}
                     />
                   </div>
@@ -132,7 +148,7 @@ export default function AlertGuest() {
                   <Input
                     type="text"
                     id="name"
-                    className="w-[90%]"
+                    className="w-full"
                     {...register("name")}
                   />
                   {errors.name && (
@@ -146,7 +162,8 @@ export default function AlertGuest() {
                   <Input
                     type="text"
                     id="phoneNumber"
-                    className="w-[90%]"
+                    className="w-full"
+                    placeholder="+41 79 123 45 67"
                     {...register("phoneNumber")}
                   />
                   {errors.phoneNumber && (
@@ -159,11 +176,17 @@ export default function AlertGuest() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <div className="mt-3 flex w-full items-center justify-between">
+            <div className="mt-5 flex w-full items-center justify-between">
               <AlertDialogCancel>Annuler</AlertDialogCancel>
-              <AlertDialogAction onClick={handleSubmit(handleSubmitForm)}>
-                Confirmer
-              </AlertDialogAction>
+              {isSubmitting ? (
+                <Button disabled>
+                  <Loader2 className="animate-spin" />
+                </Button>
+              ) : (
+                <AlertDialogAction onClick={handleSubmit(handleSubmitForm)}>
+                  Confirmer
+                </AlertDialogAction>
+              )}
             </div>
           </AlertDialogFooter>
         </form>

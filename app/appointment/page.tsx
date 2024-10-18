@@ -109,7 +109,9 @@ export default function Page() {
       try {
         if (selectedDispo) {
           const result = await getAvailibilityById(selectedDispo);
-          setSelectedTime(result?.start_time);
+          if (result !== false) {
+            setSelectedTime(result?.start_time);
+          }
         }
       } catch (err) {
         console.error(err);
@@ -153,7 +155,7 @@ export default function Page() {
     try {
       console.log(selectedTime);
       if (selectedTime !== null && selectedTime !== undefined) {
-        const response = await fetch("/api/mail", {
+        const response = await fetch("/api/mail/confirmedReservationUser", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -327,7 +329,11 @@ export default function Page() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <div className="flex w-full justify-between">
-                    <AlertGuest />
+                    <AlertGuest
+                      id_availlability={
+                        selectedDispo !== null ? selectedDispo : ""
+                      }
+                    />
                     <Link href={"/sign-in"}>
                       <AlertDialogAction>S&apos;identifier</AlertDialogAction>
                     </Link>

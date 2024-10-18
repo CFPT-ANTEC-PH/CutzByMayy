@@ -27,33 +27,30 @@ export const ReservationMail = ({
   <Html>
     <Head />
     <Body style={main}>
+      <Preview>Confirmation de la réservation</Preview>
       <Container style={container}>
-        <Heading style={h1}>CutzByMayy</Heading>
-        <Text style={paragraph}>Salut {userFirstname},</Text>
-        <Text style={paragraph}>Ta réservation à bien été enregistrée.</Text>
-        <Text style={paragraph}>
+        <Text style={company}>CutzByMayy</Text>
+        <Heading style={reservationTitle}>
+          Ta réservation à bien été enregistrée.
+        </Heading>
+        <Text style={reservationDescription}>
           Voici les informations de ta réservation :
         </Text>
-        <Text style={paragraph}>
+        <Text style={reservationDescriptionInfo}>
           {format(date, "PPPP", { locale: fr })}
           {" à "}
           {format(date, "p", { locale: fr })}
         </Text>
-        <Section style={btnContainer}>
-          <Button
-            style={button}
-            href="https://cutzbymayy.vercel.app/account/reservation"
-          >
-            Aller voir ma réservation
-          </Button>
-        </Section>
-        <Text style={paragraph}>
+        <Text style={reservationDescription}>
           On se voit bientôt alors,
           <br />
           CutzByMayy
         </Text>
         <Hr style={hr} />
-        <Text style={footer}>Le barber préféré de ton barber préféré !</Text>
+        <Text style={footerText}>
+          Le barber préféré de ton barber préféré !
+        </Text>
+        <Text style={footerText}>Veuillez ne pas répondre à ce mail.</Text>
       </Container>
     </Body>
   </Html>
@@ -66,48 +63,44 @@ ReservationMail.PreviewProps = {
 
 export default ReservationMail;
 
-const h1 = { fontSize: "40px", fontWeight: "bold" };
-
 const main = {
   backgroundColor: "#ffffff",
-  fontFamily: "'Geist', sans-serif",
+  fontFamily: "HelveticaNeue,Helvetica,Arial,sans-serif",
+  textAlign: "center" as const,
 };
 
 const container = {
+  backgroundColor: "#ffffff",
+  border: "1px solid #ddd",
+  borderRadius: "5px",
+  marginTop: "20px",
+  width: "570px",
+  maxWidth: "100%",
   margin: "0 auto",
-  padding: "20px 0 48px",
-};
-
-const logo = {
-  margin: "0 auto",
-};
-
-const paragraph = {
-  fontSize: "16px",
-  lineHeight: "26px",
-};
-
-const btnContainer = {
-  textAlign: "center" as const,
-};
-
-const button = {
-  backgroundColor: "#5F51E8",
-  borderRadius: "3px",
-  color: "#fff",
-  fontSize: "16px",
-  textDecoration: "none",
-  textAlign: "center" as const,
-  display: "block",
-  padding: "12px",
+  padding: "12% 6%",
 };
 
 const hr = {
   borderColor: "#cccccc",
   margin: "20px 0",
 };
-
-const footer = {
-  color: "#8898aa",
+const footerText = {
   fontSize: "12px",
+};
+const company = {
+  fontWeight: "bold",
+  fontSize: "18px",
+  textAlign: "center" as const,
+};
+const reservationTitle = {
+  textAlign: "center" as const,
+};
+const reservationDescription = {
+  textAlign: "center" as const,
+};
+
+const reservationDescriptionInfo = {
+  textAlign: "center" as const,
+  fontSize: "14px",
+  fontWeight: "bold",
 };
