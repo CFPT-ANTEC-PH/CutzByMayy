@@ -10,7 +10,7 @@ export async function POST(request: Request, res: Response) {
   const { data, error } = await resend.emails.send({
     from: "CutzByMayy <noreply@simoncdt.ch>",
     to: [email],
-    subject: "Votre code de vérification",
+    subject: "Votre code est " + code,
     html: render(VerifyEmail({ code })),
   });
 

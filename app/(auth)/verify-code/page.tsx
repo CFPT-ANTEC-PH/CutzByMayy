@@ -66,7 +66,7 @@ export default function Page() {
       <CardHeader>
         <CardTitle>Vérification du Code</CardTitle>
         <CardDescription>
-          Entrez le code à 6 chiffres pour vérification
+          Entrez le code que vous avez reçu par email.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex w-full flex-col items-center">

@@ -164,7 +164,7 @@ export default function Page() {
   return (
     <>
       <div className="max-sm:hidden">
-        <Card className="mx-auto w-full max-w-4xl">
+        <Card className="mx-auto my-7 w-full max-w-4xl">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">
               Mes Réservations
@@ -185,93 +185,95 @@ export default function Page() {
                 A venir
               </label>
             </div>
-            {loading ? (
-              <p className="text-center text-muted-foreground">
-                Chargement ...
-              </p>
-            ) : avaibilities.length === 0 ? (
-              <div className="flex flex-col gap-3">
+            <div>
+              {loading ? (
                 <p className="text-center text-muted-foreground">
-                  Vous n&apos;avez aucune réservation pour le moment.
+                  Chargement ...
                 </p>
-                <p className="text-center">
-                  Vous voulez en prendre un ? Cliquez&nbsp;
-                  <Link href={"/appointment"} className="underline">
-                    ici
-                  </Link>
-                </p>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Heure</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {avaibilities.map((avaibilitie) => (
-                    <TableRow key={avaibilitie.id}>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                          {format(avaibilitie.start_time, "dd/MM/yyyy")}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          <ClockIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                          {format(avaibilitie.start_time, "HH:mm")} -{" "}
-                          {format(avaibilitie.end_time, "HH:mm")}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center capitalize">
-                          Confirmé
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="secondary">Annuler</Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Êtes-vous sûr de vouloir annuler cette
-                                réservation
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Une fois appuyé sur "Confirmer", la réservation
-                                sera annulée.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Annuler</AlertDialogCancel>
-                              <AlertDialogAction
-                                className="bg-red-500 text-white hover:bg-red-600"
-                                onClick={() =>
-                                  handleCancelAvailability(avaibilitie.id)
-                                }
-                                disabled={loadingId === avaibilitie.id}
-                              >
-                                {loadingId === avaibilitie.id ? (
-                                  <LoaderCircle className="m-auto animate-spin" />
-                                ) : (
-                                  "Confirmer"
-                                )}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </TableCell>
+              ) : avaibilities.length === 0 ? (
+                <div className="flex flex-col gap-3">
+                  <p className="text-center text-muted-foreground">
+                    Vous n&apos;avez aucune réservation pour le moment.
+                  </p>
+                  <p className="text-center">
+                    Vous voulez en prendre un ? Cliquez&nbsp;
+                    <Link href={"/appointment"} className="underline">
+                      ici
+                    </Link>
+                  </p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Heure</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Action</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
+                  </TableHeader>
+                  <TableBody>
+                    {avaibilities.map((avaibilitie) => (
+                      <TableRow key={avaibilitie.id}>
+                        <TableCell>
+                          <div className="flex items-center">
+                            <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                            {format(avaibilitie.start_time, "dd/MM/yyyy")}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center">
+                            <ClockIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                            {format(avaibilitie.start_time, "HH:mm")} -{" "}
+                            {format(avaibilitie.end_time, "HH:mm")}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center capitalize">
+                            Confirmé
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="secondary">Annuler</Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Êtes-vous sûr de vouloir annuler cette
+                                  réservation
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Une fois appuyé sur "Confirmer", la
+                                  réservation sera annulée.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="bg-red-500 text-white hover:bg-red-600"
+                                  onClick={() =>
+                                    handleCancelAvailability(avaibilitie.id)
+                                  }
+                                  disabled={loadingId === avaibilitie.id}
+                                >
+                                  {loadingId === avaibilitie.id ? (
+                                    <LoaderCircle className="m-auto animate-spin" />
+                                  ) : (
+                                    "Confirmer"
+                                  )}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

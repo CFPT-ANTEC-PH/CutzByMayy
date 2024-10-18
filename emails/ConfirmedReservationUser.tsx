@@ -31,7 +31,7 @@ export const ReservationMail = ({
       <Container style={container}>
         <Text style={company}>CutzByMayy</Text>
         <Heading style={reservationTitle}>
-          Ta réservation à bien été enregistrée.
+          Ta réservation a bien été enregistrée.
         </Heading>
         <Text style={reservationDescription}>
           Voici les informations de ta réservation :

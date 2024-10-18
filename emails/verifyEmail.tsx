@@ -19,13 +19,13 @@ const VerifyEmail = ({ code }: MailProps) => {
   return (
     <Html>
       <Head />
-      <Preview>S&apos;inscrire chez simoncdt.ch</Preview>
+      <Preview>Pour activer votre compte</Preview>
       <Body style={main}>
         <Container style={container}>
           <Text style={company}>CutzByMayy</Text>
-          <Heading style={codeTitle}>Ton code d'authentification</Heading>
+          <Heading style={codeTitle}>Votre code d'authentification</Heading>
           <Text style={codeDescription}>
-            Rentre le code suivant pour activer ton compte.
+            Entrez le code suivant pour activer votre compte.
           </Text>
           <Section style={codeContainer}>
             <Heading style={codeStyle}>{code}</Heading>
