@@ -153,8 +153,9 @@ export default function Page() {
 
   const fetchEmail = async () => {
     try {
-      console.log(selectedTime);
       if (selectedTime !== null && selectedTime !== undefined) {
+        const dateUTC = selectedTime.toISOString();
+
         const response = await fetch("/api/mail/confirmedReservationUser", {
           method: "POST",
           headers: {
@@ -163,7 +164,7 @@ export default function Page() {
           body: JSON.stringify({
             email: session?.user.email,
             userFirstname: session?.user.name,
-            date: selectedTime,
+            date: dateUTC,
           }),
         });
 

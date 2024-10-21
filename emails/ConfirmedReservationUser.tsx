@@ -23,43 +23,48 @@ interface ReservationMailProps {
 export const ReservationMail = ({
   userFirstname,
   date,
-}: ReservationMailProps) => (
-  <Html>
-    <Head />
-    <Body style={main}>
-      <Preview>Confirmation de la réservation</Preview>
-      <Container style={container}>
-        <Text style={company}>CutzByMayy</Text>
-        <Heading style={reservationTitle}>
-          Ta réservation a bien été enregistrée.
-        </Heading>
-        <Text style={reservationDescription}>
-          Voici les informations de ta réservation :
-        </Text>
-        <Text style={reservationDescriptionInfo}>
-          {format(date, "PPPP", { locale: fr })}
-          {" à "}
-          {format(date, "p", { locale: fr })}
-        </Text>
-        <Section style={btnContainer}>
-          <Button style={button} href="https://simoncdt.ch/account/reservation">
-            Aller voir ma réservation
-          </Button>
-        </Section>
-        <Text style={reservationDescription}>
-          On se voit bientôt alors,
-          <br />
-          CutzByMayy
-        </Text>
-        <Hr style={hr} />
-        <Text style={footerText}>
-          Le barber préféré de ton barber préféré !
-        </Text>
-        <Text style={footerText}>Veuillez ne pas répondre à ce mail.</Text>
-      </Container>
-    </Body>
-  </Html>
-);
+}: ReservationMailProps) => {
+  return (
+    <Html>
+      <Head />
+      <Body style={main}>
+        <Preview>Confirmation de la réservation</Preview>
+        <Container style={container}>
+          <Text style={company}>CutzByMayy</Text>
+          <Heading style={reservationTitle}>
+            Ta réservation a bien été enregistrée.
+          </Heading>
+          <Text style={reservationDescription}>
+            Voici les informations de ta réservation :
+          </Text>
+          <Text style={reservationDescriptionInfo}>
+            {format(date, "PPPP", { locale: fr })}
+            {" à "}
+            {format(date, "p", { locale: fr })}
+          </Text>
+          <Section style={btnContainer}>
+            <Button
+              style={button}
+              href="https://simoncdt.ch/account/reservation"
+            >
+              Aller voir ma réservation
+            </Button>
+          </Section>
+          <Text style={reservationDescription}>
+            On se voit bientôt alors,
+            <br />
+            CutzByMayy
+          </Text>
+          <Hr style={hr} />
+          <Text style={footerText}>
+            Le barber préféré de ton barber préféré !
+          </Text>
+          <Text style={footerText}>Veuillez ne pas répondre à ce mail.</Text>
+        </Container>
+      </Body>
+    </Html>
+  );
+};
 
 ReservationMail.PreviewProps = {
   userFirstname: "Alan",
