@@ -156,3 +156,113 @@ export const updateAvailibilityGuestId = async (
     return false;
   }
 };
+
+export const getAvailabilityByDate = async (date: Date) => {
+  try {
+    const debutJournee = new Date(date);
+    debutJournee.setHours(0, 0, 0, 0); // Minuit
+
+    const finJournee = new Date(date);
+    finJournee.setHours(23, 59, 59, 999); // 23:59:59.999
+
+    const availabilities = await db.availability.findMany({
+      where: {
+        start_time: {
+          gte: debutJournee,
+        },
+        end_time: {
+          lte: finJournee,
+        },
+        OR: [
+          {
+            user_id: {
+              not: null,
+            },
+          },
+          {
+            guest_id: {
+              not: null,
+            },
+          },
+        ],
+      },
+      include: {
+        user: {
+          select: {
+            first_name: true, // Inclure le nom de l'utilisateur
+          },
+        },
+        guest: {
+          select: {
+            first_name: true, // Inclure le prénom du guest
+          },
+        },
+      },
+      orderBy: {
+        start_time: "asc",
+      },
+    });
+
+    // Transformer les résultats pour inclure le nom ou le prénom
+    const formattedAvailabilities = availabilities.map((availability) => {
+      return {
+        ...availability,
+        name: availability.user_id
+          ? availability.user?.first_name // Nom de l'utilisateur
+          : availability.guest_id
+            ? availability.guest?.first_name // Prénom du guest
+            : null,
+      };
+    });
+
+    return formattedAvailabilities;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+export const getInfoOfAvailabilityById = async (id: string) => {
+  try {
+    const availability = await db.availability.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            email: true,
+            first_name: true,
+            phone_number: true,
+          },
+        },
+        guest: {
+          select: {
+            phone_number: true,
+            email: true,
+            first_name: true,
+          },
+        },
+      },
+    });
+    return {
+      ...availability,
+      name: availability?.user_id
+        ? availability.user?.first_name // Nom de l'utilisateur
+        : availability?.guest_id
+          ? availability.guest?.first_name // Prénom du guest
+          : null,
+      email: availability?.user_id
+        ? availability.user?.email // Email de l'utilisateur
+        : availability?.guest_id
+          ? availability.guest?.email // Email du guest
+          : null,
+      phone_number: availability?.user_id
+        ? availability.user?.phone_number // Numéro de téléphone de l'utilisateur
+        : availability?.guest_id
+          ? availability.guest?.phone_number // Numéro de téléphone du guest
+          : null,
+    };
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};

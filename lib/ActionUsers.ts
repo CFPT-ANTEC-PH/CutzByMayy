@@ -158,3 +158,61 @@ export const updateVerifyCode = async (email: string) => {
     return false;
   }
 };
+
+export const getAllUsersAndGuests = async () => {
+  try {
+    const users = await db.user.findMany();
+    const guests = await db.guest.findMany();
+    return {
+      users,
+      guests,
+    };
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des utilisateurs et invités :",
+      error,
+    );
+    throw new Error("Unable to fetch users and guests");
+  }
+};
+
+export const getAllUsersAndGuestsByName = async (name: string) => {
+  try {
+    const users = await db.user.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: name,
+              mode: "insensitive",
+            },
+          },
+          {
+            first_name: {
+              contains: name,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+    });
+    const guests = await db.guest.findMany({
+      where: {
+        first_name: {
+          contains: name,
+          mode: "insensitive",
+        },
+      },
+    });
+    return {
+      users,
+      guests,
+    };
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des utilisateurs et invités :",
+      error,
+    );
+    throw new Error("Unable to fetch users and guests");
+  }
+};

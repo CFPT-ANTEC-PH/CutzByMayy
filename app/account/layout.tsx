@@ -12,6 +12,7 @@ export default function AuthLayout({
   if (status === "unauthenticated") {
     router.back();
   }
-
-  return <div className="">{children}</div>;
+  if (status == "authenticated") {
+    return <div className="">{children}</div>;
+  }
 }

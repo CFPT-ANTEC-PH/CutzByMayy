@@ -21,12 +21,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Calendar, LogOut, User } from "lucide-react";
+import {
+  Calendar,
+  CalendarDays,
+  LogOut,
+  User,
+  UserPen,
+  Users,
+} from "lucide-react";
 
 export default function Navbar() {
-  const lstMenu = ["Accueil", "Tarifs", "Rendez-vous", "Contact"];
-  const lstAccount = ["Informations", "Réservations"];
-
   const router = useRouter();
 
   const [isOpen, setOpen] = useState(false);
@@ -83,7 +87,7 @@ export default function Navbar() {
                 <DropdownMenuGroup className="font-bold">
                   <Link href={"/account/information"} className="flex">
                     <DropdownMenuItem className="w-full py-3 hover:cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
+                      <UserPen className="mr-2 h-4 w-4" />
                       <span className="text-base">Informations</span>
                     </DropdownMenuItem>
                   </Link>
@@ -95,6 +99,25 @@ export default function Navbar() {
                   </Link>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
+                {session.user.role == "ADMIN" ? (
+                  <>
+                    <DropdownMenuGroup className="font-bold">
+                      <Link href={"/admin/calendar"} className="flex">
+                        <DropdownMenuItem className="w-full py-3 hover:cursor-pointer">
+                          <CalendarDays className="mr-2 h-4 w-4" />
+                          <span className="text-base">Calendrier</span>
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link href={"/admin/users"} className="flex">
+                        <DropdownMenuItem className="w-full py-3 hover:cursor-pointer">
+                          <Users className="mr-2 h-4 w-4" />
+                          <span className="text-base">Utilisateurs</span>
+                        </DropdownMenuItem>
+                      </Link>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                  </>
+                ) : null}
 
                 <div onClick={Deconnexion}>
                   <DropdownMenuItem className="w-ful py-3 hover:cursor-pointer">
@@ -136,7 +159,7 @@ export default function Navbar() {
           } h-screen w-screen min-w-[400px] justify-between bg-slate-950/80 font-bold backdrop-blur-md transition-all duration-500 ease-in-out`}
         >
           <div className="h-[80px]"></div>
-          <div className="mt-10 flex w-screen flex-col items-center gap-8 text-xl font-medium">
+          <div className="mt-10 flex w-screen flex-col items-center gap-8 overflow-y-auto text-xl font-medium">
             <Link
               href={`/`}
               onClick={() => setOpen(false)}
@@ -176,19 +199,34 @@ export default function Navbar() {
                       Mon compte
                     </AccordionTrigger>
                     <AccordionContent className="mt-5 flex flex-col items-center gap-10 text-lg underline">
-                      {lstAccount.map((account) => (
-                        <Link
-                          href={
-                            account == "Réservations"
-                              ? `/account/reservation`
-                              : `/account/information`
-                          }
-                          key={account}
-                          onClick={() => setOpen(false)}
-                        >
-                          {account}
-                        </Link>
-                      ))}
+                      <Link
+                        href={"/account/information"}
+                        onClick={() => setOpen(false)}
+                      >
+                        Informations
+                      </Link>
+                      <Link
+                        href={"/account/reservation"}
+                        onClick={() => setOpen(false)}
+                      >
+                        Réservations
+                      </Link>
+                      {session.user.role == "ADMIN" ? (
+                        <>
+                          <Link
+                            href={"/admin/calendar"}
+                            onClick={() => setOpen(false)}
+                          >
+                            Calendrier
+                          </Link>
+                          <Link
+                            href={"/admin/users"}
+                            onClick={() => setOpen(false)}
+                          >
+                            Utilisateurs
+                          </Link>
+                        </>
+                      ) : null}
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
