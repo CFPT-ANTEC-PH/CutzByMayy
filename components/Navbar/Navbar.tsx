@@ -159,7 +159,7 @@ export default function Navbar() {
           } h-screen w-screen min-w-[400px] justify-between bg-slate-950/80 font-bold backdrop-blur-md transition-all duration-500 ease-in-out`}
         >
           <div className="h-[80px]"></div>
-          <div className="mt-10 flex w-screen flex-col items-center gap-8 overflow-y-auto text-xl font-medium">
+          <div className="mt-10 flex w-screen flex-col items-center gap-8 overflow-y-auto text-base font-medium">
             <Link
               href={`/`}
               onClick={() => setOpen(false)}
@@ -195,10 +195,10 @@ export default function Navbar() {
               <>
                 <Accordion type="single" collapsible>
                   <AccordionItem value="item-1">
-                    <AccordionTrigger className="w-[145px]">
+                    <AccordionTrigger className="w-[125px]">
                       Mon compte
                     </AccordionTrigger>
-                    <AccordionContent className="mt-5 flex flex-col items-center gap-10 text-lg underline">
+                    <AccordionContent className="mt-5 flex flex-col items-center gap-10 text-base underline">
                       <Link
                         href={"/account/information"}
                         onClick={() => setOpen(false)}
